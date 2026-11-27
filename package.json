@@ -3,5 +3,8 @@
   "description": "Tests for the Shh Links extension, kept outside extension/ so they stay out of the Raycast Store package",
   "scripts": {
     "test": "node --test test/*.test.ts"
+  },
+  "engines": {
+    "node": ">=22.18"
   }
 }

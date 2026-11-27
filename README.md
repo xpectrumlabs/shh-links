@@ -18,7 +18,7 @@ It pastes but never sends, so you can still read the message over before pressin
 
 Shh Links is waiting for review in the Raycast Store. Until it is published there, install it from this repository.
 
-You need macOS, [Raycast](https://www.raycast.com), [Node.js](https://nodejs.org) 22 or later and the Discord desktop app.
+You need macOS, [Raycast](https://www.raycast.com), [Node.js](https://nodejs.org) 22 or later (`nvm use` picks it from `.nvmrc`) and the Discord desktop app.
 
 ```sh
 git clone https://github.com/xpectrumlabs/shh-links.git
@@ -44,6 +44,8 @@ The commands are most useful on a hotkey, **Paste Clipboard Without Embed** abov
 3. Run either command. With the form, press `⌘↵` to paste.
 
 Select words in the message box before running a command and they become the link text.
+
+Links lose their tracking parameters (`utm_*`, `fbclid`, `gclid` and the like) on the way. To keep them, turn off **Remove tracking parameters** in the extension's settings in Raycast.
 
 ## Development
 
