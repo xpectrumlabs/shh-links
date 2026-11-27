@@ -72,6 +72,8 @@ export default function Command() {
         </ActionPanel>
       }
     >
+      {/* First, so a long list does not push it out of sight below the result */}
+      {tooLong && <Form.Description title="⚠️ Too long" text={tooLong} />}
       {/* A text applies to a single link only, so with a list the field is not shown */}
       {many ? (
         <Form.Description text={`${countUrls(url)} links: each one becomes [site](<url>)`} />
@@ -97,8 +99,10 @@ export default function Command() {
           setUrlError(undefined);
         }}
       />
-      <Form.Description title="Result" text={link ?? "No valid URL yet"} />
-      {tooLong && <Form.Description title="⚠️ Too long" text={tooLong} />}
+      {/* One row per line: a single description shows a list's line breaks as spaces */}
+      {(link ?? "No valid URL yet").split("\n").map((line, i) => (
+        <Form.Description key={i} title={i === 0 ? "Result" : undefined} text={line || " "} />
+      ))}
     </Form>
   );
 }
