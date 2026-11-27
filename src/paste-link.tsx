@@ -60,7 +60,7 @@ export default function Command() {
       });
     } else if (result === "no focus") {
       await Clipboard.copy(link);
-      await showHUD("Discord did not come to the front; the link was copied");
+      await showHUD("Discord was not in front; the link was copied");
     }
   }
 

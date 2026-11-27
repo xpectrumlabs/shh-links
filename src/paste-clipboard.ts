@@ -23,7 +23,7 @@ export default async function Command() {
     await showHUD(
       result === "closed"
         ? "Discord is closed; the link was copied"
-        : "Discord did not come to the front; the link was copied",
+        : "Discord was not in front; the link was copied",
     );
   }
 }
