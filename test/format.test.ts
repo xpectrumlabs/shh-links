@@ -39,6 +39,12 @@ test("links already wrapped or masked are not wrapped twice", () => {
   assert.equal(wrapUrls("[a](https://a.com)"), "[a](<https://a.com>)");
 });
 
+test("a masked link keeps its whole URL, punctuation included", () => {
+  assert.equal(wrapUrls("see [docs](https://a.com/?q=wow!)"), "see [docs](<https://a.com/?q=wow!>)");
+  assert.equal(wrapUrls("[docs](https://a.com/a.)."), "[docs](<https://a.com/a.>).");
+  assert.equal(wrapUrls("[wiki](https://x.com/a_(b)), ok"), "[wiki](<https://x.com/a_(b)>), ok");
+});
+
 test("countUrls counts every link in the content", () => {
   assert.equal(countUrls(`${BCHAGAS}\n\n${BCHAGAS}`), 2);
   assert.equal(countUrls("[a](<https://a.com>) https://b.com"), 2);

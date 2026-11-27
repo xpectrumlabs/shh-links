@@ -31,6 +31,17 @@ function trimUrl(url: string): string {
   return url.slice(0, end);
 }
 
+// In [text](url) the URL ends at the ")" that closes the link, so trailing punctuation
+// belongs to it: [a](https://a.com/?q=wow!). undefined when that ")" is missing.
+function maskedEnd(url: string): number | undefined {
+  let depth = 0;
+  for (let i = 0; i < url.length; i++) {
+    if (url[i] === "(") depth++;
+    else if (url[i] === ")" && depth-- === 0) return i;
+  }
+  return undefined;
+}
+
 export function countUrls(content: string): number {
   return content.match(URL_IN_TEXT)?.length ?? 0;
 }
@@ -100,11 +111,12 @@ export function siteName(url: string): string {
 // repeats is numbered (bchagas 1, bchagas 2) so the links can be told apart.
 export function wrapUrls(content: string, { named = false, untrack = false }: FormatOptions = {}): string {
   const found = [...content.matchAll(URL_IN_TEXT)].map((m) => {
-    const trimmed = trimUrl(m[0]);
-    const url = untrack ? stripTracking(trimmed) : trimmed;
     const offset = m.index;
     const wrapped = content[offset - 1] === "<";
     const masked = content.slice(offset - 2, offset) === "](";
+    const end = masked ? maskedEnd(m[0]) : undefined;
+    const trimmed = end === undefined ? trimUrl(m[0]) : m[0].slice(0, end);
+    const url = untrack ? stripTracking(trimmed) : trimmed;
     return { url, rest: m[0].slice(trimmed.length), wrapped, name: named && !wrapped && !masked ? siteName(url) : "" };
   });
 
