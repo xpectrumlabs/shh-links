@@ -104,7 +104,8 @@ export default function Command() {
         placeholder="https://… (one link, or a list)"
         info="Filled in from the clipboard. With several links, each one becomes [site](<url>)"
         value={url}
-        error={urlError}
+        // The link can come from either field, so the error goes once there is one
+        error={link ? undefined : urlError}
         onChange={(value) => {
           setUrl(value);
           setUrlError(undefined);
