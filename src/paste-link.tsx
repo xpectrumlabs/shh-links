@@ -11,7 +11,7 @@ import {
 } from "@raycast/api";
 import { useEffect, useState } from "react";
 import { discordSelection, pasteInDiscord } from "./discord";
-import { cleanUrl, countUrls, formatContent, fromSelection, lengthWarning, siteName } from "./format";
+import { cleanUrl, countUrls, formatContent, fromSelection, lengthWarning, maskedText, siteName } from "./format";
 
 // The clipboard as the URL field starts: one URL alone, or text holding several
 function initialUrls(clip: string | undefined): string {
@@ -30,9 +30,11 @@ export default function Command() {
   useEffect(() => {
     (async () => {
       const selection = fromSelection(await discordSelection());
-      const urls = selection.urls || initialUrls(await Clipboard.readText());
-      // A single link starts named after its site; clearing the text leaves a bare <url>
-      setText((typed) => typed || selection.text || siteName(cleanUrl(urls)));
+      const content = selection.urls || (await Clipboard.readText()) || "";
+      const urls = initialUrls(content);
+      // A single link starts with its masked text or its site's name; clearing the text
+      // leaves a bare <url>
+      setText((typed) => typed || selection.text || maskedText(content) || siteName(cleanUrl(urls)));
       setUrl((typed) => typed || urls);
     })().finally(() => setLoading(false));
   }, []);

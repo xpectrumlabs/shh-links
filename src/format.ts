@@ -15,6 +15,14 @@ export function cleanUrl(value: string | undefined): string {
   return isUrl(s) ? s : "";
 }
 
+// The text of a clipboard value that is one masked link, [docs](url) giving "docs",
+// with the escaping undone so it is not escaped twice. "" for anything else.
+export function maskedText(value: string | undefined): string {
+  const masked = (value ?? "").trim().match(/^\[(.*)\]\((.*)\)$/s);
+  if (!masked || !cleanUrl(value)) return "";
+  return masked[1].replace(/\\([\\[\]*_~`|])/g, "$1");
+}
+
 const URL_IN_TEXT = /https?:\/\/[^\s<>]+/g;
 
 // A URL found in prose ends before trailing punctuation and before a ")" it did not
@@ -136,13 +144,14 @@ export function wrapUrls(content: string, { named = false, untrack = false }: Fo
   });
 }
 
-// What gets pasted: the text applies to a single URL; content with several URLs (a
-// list of links, a message) has each one wrapped and the text ignored.
+// What gets pasted: the text applies to a single URL, which keeps its own text when it
+// is a masked link; content with several URLs (a list of links, a message) has each
+// one wrapped and the text ignored.
 export function formatContent(text: string, content: string, options: FormatOptions = {}): string | undefined {
   let single = cleanUrl(content);
   if (single) {
     if (options.untrack) single = stripTracking(single);
-    return formatLink(text || (options.named ? siteName(single) : ""), single);
+    return formatLink(text || maskedText(content) || (options.named ? siteName(single) : ""), single);
   }
   if (!content.trim()) {
     const typed = text.trim();

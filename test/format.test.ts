@@ -8,6 +8,7 @@ import {
   fromSelection,
   isUrl,
   lengthWarning,
+  maskedText,
   siteName,
   stripTracking,
   wrapUrls,
@@ -137,6 +138,20 @@ test("named: a single link gets the site name unless a text is given", () => {
   assert.equal(formatContent("", BCHAGAS, { named: true }), `[bchagas](<${BCHAGAS}>)`);
   assert.equal(formatContent("Dotfiles", BCHAGAS, { named: true }), `[Dotfiles](<${BCHAGAS}>)`);
   assert.equal(formatContent("", BCHAGAS), `<${BCHAGAS}>`);
+});
+
+test("a single masked link keeps its text unless another is given", () => {
+  assert.equal(formatContent("", "[docs](https://a.com)", { named: true }), "[docs](<https://a.com>)");
+  assert.equal(formatContent("", "[docs](<https://a.com>)"), "[docs](<https://a.com>)");
+  assert.equal(formatContent("", "[my \\[docs\\]](<https://a.com>)"), "[my \\[docs\\]](<https://a.com>)");
+  assert.equal(formatContent("Guide", "[docs](https://a.com)"), "[Guide](<https://a.com>)");
+});
+
+test("maskedText is the text of a masked link, unescaped", () => {
+  assert.equal(maskedText("[docs](https://a.com)"), "docs");
+  assert.equal(maskedText(" [my \\[docs\\]](<https://a.com>)\n"), "my [docs]");
+  assert.equal(maskedText("https://a.com"), "");
+  assert.equal(maskedText(undefined), "");
 });
 
 test("named: every bare link of a list gets its site name", () => {
