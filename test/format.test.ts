@@ -12,7 +12,7 @@ import {
   siteName,
   stripTracking,
   wrapUrls,
-} from "../src/format.ts";
+} from "../extension/src/format.ts";
 
 const BCHAGAS = "https://www.bchagas.com/projetos/997883/dotfiles";
 
