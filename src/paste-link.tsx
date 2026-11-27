@@ -50,7 +50,16 @@ export default function Command() {
       setUrlError("Enter a URL starting with http:// or https://");
       return;
     }
-    const result = await pasteInDiscord(link);
+    let result;
+    try {
+      result = await pasteInDiscord(link);
+    } catch (error) {
+      // The window may be closed by now, so a HUD, which shows either way
+      const reason = error instanceof Error ? error.message : String(error);
+      await Clipboard.copy(link).catch(() => undefined);
+      await showHUD(`Could not paste into Discord (${reason}); the link was copied`);
+      return;
+    }
     if (result === "closed") {
       await Clipboard.copy(link);
       await showToast({
