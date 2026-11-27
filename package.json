@@ -1,6 +1,7 @@
 {
   "private": true,
   "description": "Tests for the Shh Links extension, kept outside extension/ so they stay out of the Raycast Store package",
+  "license": "MIT",
   "scripts": {
     "test": "node --test test/*.test.ts"
   },
