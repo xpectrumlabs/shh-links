@@ -8,10 +8,11 @@ import {
   fromSelection,
   isUrl,
   lengthWarning,
+  maskedText,
   siteName,
   stripTracking,
   wrapUrls,
-} from "../src/format.ts";
+} from "../extension/src/format.ts";
 
 const BCHAGAS = "https://www.bchagas.com/projetos/997883/dotfiles";
 
@@ -37,6 +38,12 @@ test("links already wrapped or masked are not wrapped twice", () => {
   assert.equal(wrapUrls("<https://a.com>"), "<https://a.com>");
   assert.equal(wrapUrls("[a](<https://a.com>)"), "[a](<https://a.com>)");
   assert.equal(wrapUrls("[a](https://a.com)"), "[a](<https://a.com>)");
+});
+
+test("a masked link keeps its whole URL, punctuation included", () => {
+  assert.equal(wrapUrls("see [docs](https://a.com/?q=wow!)"), "see [docs](<https://a.com/?q=wow!>)");
+  assert.equal(wrapUrls("[docs](https://a.com/a.)."), "[docs](<https://a.com/a.>).");
+  assert.equal(wrapUrls("[wiki](https://x.com/a_(b)), ok"), "[wiki](<https://x.com/a_(b)>), ok");
 });
 
 test("countUrls counts every link in the content", () => {
@@ -131,6 +138,20 @@ test("named: a single link gets the site name unless a text is given", () => {
   assert.equal(formatContent("", BCHAGAS, { named: true }), `[bchagas](<${BCHAGAS}>)`);
   assert.equal(formatContent("Dotfiles", BCHAGAS, { named: true }), `[Dotfiles](<${BCHAGAS}>)`);
   assert.equal(formatContent("", BCHAGAS), `<${BCHAGAS}>`);
+});
+
+test("a single masked link keeps its text unless another is given", () => {
+  assert.equal(formatContent("", "[docs](https://a.com)", { named: true }), "[docs](<https://a.com>)");
+  assert.equal(formatContent("", "[docs](<https://a.com>)"), "[docs](<https://a.com>)");
+  assert.equal(formatContent("", "[my \\[docs\\]](<https://a.com>)"), "[my \\[docs\\]](<https://a.com>)");
+  assert.equal(formatContent("Guide", "[docs](https://a.com)"), "[Guide](<https://a.com>)");
+});
+
+test("maskedText is the text of a masked link, unescaped", () => {
+  assert.equal(maskedText("[docs](https://a.com)"), "docs");
+  assert.equal(maskedText(" [my \\[docs\\]](<https://a.com>)\n"), "my [docs]");
+  assert.equal(maskedText("https://a.com"), "");
+  assert.equal(maskedText(undefined), "");
 });
 
 test("named: every bare link of a list gets its site name", () => {
